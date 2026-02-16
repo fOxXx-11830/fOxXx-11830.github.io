@@ -106,6 +106,21 @@ const TodoModal = ({ date, todos, onClose, onAdd, onDelete }) => {
 
     // Current effective emoji to display in UI preview
     const effectiveEmoji = customEmoji || autoEmoji || PRIORITY_EMOJIS[priority];
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+    const COMMON_EMOJIS = [
+        '😀', '😂', '🥰', '😎', '🤔', '😴', '😭', '😡',
+        '👋', '👍', '👎', '👏', '🙏', '💪', '🧠', '👀',
+        '🐶', '🐱', '🐭', '🐹', '🐰', '🐻', '🐼', '🐨',
+        '🍎', '🍌', '🍇', '🍉', '🍓', '🍑', '🍒', '🍔',
+        '⚽', '🏀', '🏈', '⚾', '🎾', '🏐', '🏉', '🎱',
+        '🚗', '🚕', '🚙', '🚌', '🏎️', '🚓', '🚑', '🚒',
+        '🏠', '🏡', '🏢', '🏣', '🏥', '🏦', '🏨', '🏩',
+        '💡', '💣', '💤', '💥', '💦', '💨', '💫', '💬',
+        '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍',
+        '💯', '💢', '💥', '💫', '💦', '💨', '🕳️', '💣',
+        '📅', '📆', '🗓️', '📈', '📉', 'bar_chart', '📋', '📌'
+    ];
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -149,9 +164,34 @@ const TodoModal = ({ date, todos, onClose, onAdd, onDelete }) => {
                             <option value="Low">Low 📝</option>
                         </select>
 
-                        {/* Emoji Preview / Manual Override */}
-                        <div className="emoji-preview" title="Current Emoji">
-                            {effectiveEmoji}
+                        {/* Emoji Preview & Picker Trigger */}
+                        <div className="emoji-picker-container">
+                            <div
+                                className="emoji-preview"
+                                title="Click to choose emoji"
+                                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                            >
+                                {effectiveEmoji}
+                            </div>
+
+                            {showEmojiPicker && (
+                                <div className="emoji-popup">
+                                    <div className="emoji-grid">
+                                        {COMMON_EMOJIS.map((emoji, idx) => (
+                                            <span
+                                                key={idx}
+                                                className="emoji-option"
+                                                onClick={() => {
+                                                    setCustomEmoji(emoji);
+                                                    setShowEmojiPicker(false);
+                                                }}
+                                            >
+                                                {emoji}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <button type="submit" className="add-btn">Add</button>
