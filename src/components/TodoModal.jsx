@@ -8,19 +8,77 @@ const PRIORITY_EMOJIS = {
     Low: '📝'
 };
 
+const EMOJI_KEYWORDS = {
+    // Work & Study
+    'meeting': '💼', '미팅': '💼', 'work': '💼', '일': '💼',
+    'study': '📚', '공부': '📚', 'assignment': '📝', '과제': '📝',
+    'exam': '💯', '시험': '💯', 'presentation': '📊', '발표': '📊',
+    'code': '💻', 'coding': '💻', 'dev': '💻', '개발': '💻',
+
+    // Health & Sports
+    'gym': '💪', 'workout': '💪', 'exercise': '💪', '운동': '💪', '헬스': '💪',
+    'run': '🏃', 'running': '🏃', '러닝': '🏃', '달리기': '🏃',
+    'soccer': '⚽', '축구': '⚽', 'basketball': '🏀', '농구': '🏀',
+    'yoga': '🧘', '요가': '🧘', 'hospital': '🏥', '병원': '🏥',
+
+    // Life & Event
+    'birthday': '🎂', 'bday': '🎂', '생일': '🎂', 'party': '🎉', '파티': '🎉',
+    'date': '❤️', '데이트': '❤️', 'movie': '🎬', '영화': '🎬',
+    'dinner': '🍽️', '저녁': '🍽️', 'lunch': '🍴', '점심': '🍴',
+    'coffee': '☕', 'cafe': '☕', '커피': '☕', '카페': '☕',
+    'trip': '✈️', 'travel': '✈️', '여행': '✈️', 'flight': '✈️',
+
+    // Chores
+    'clean': '🧹', 'cleaning': '🧹', '청소': '🧹',
+    'laundry': '🧺', '빨래': '🧺',
+    'shop': '🛒', 'shopping': '🛒', '장보기': '🛒', '마트': '🛒',
+    'bank': '🏦', '은행': '🏦',
+
+    // Others
+    'book': '📖', 'reading': '📖', '독서': '📖', '책': '📖',
+    'game': '🎮', 'gaming': '🎮', '게임': '🎮',
+    'music': '🎵', 'song': '🎵', '음악': '🎵', '노래': '🎵'
+};
+
 const TodoModal = ({ date, todos, onClose, onAdd, onDelete }) => {
     const [text, setText] = useState('');
     const [priority, setPriority] = useState('Medium');
     const [customEmoji, setCustomEmoji] = useState('');
+    const [autoEmoji, setAutoEmoji] = useState(null); // State for auto-detected emoji
+
+    const getEmojiForText = (inputText) => {
+        const lowerText = inputText.toLowerCase();
+        for (const [keyword, emoji] of Object.entries(EMOJI_KEYWORDS)) {
+            if (lowerText.includes(keyword)) {
+                return emoji;
+            }
+        }
+        return null;
+    };
+
+    const handleTextChange = (e) => {
+        const newText = e.target.value;
+        setText(newText);
+
+        // Auto-detect emoji
+        const detected = getEmojiForText(newText);
+        if (detected) {
+            setAutoEmoji(detected);
+        } else {
+            setAutoEmoji(null);
+        }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!text.trim()) return;
 
-        const emoji = customEmoji || PRIORITY_EMOJIS[priority];
+        // Priority: Custom Emoji > Auto Detected > Priority Default
+        const emoji = customEmoji || autoEmoji || PRIORITY_EMOJIS[priority];
         onAdd(date, text, priority, emoji);
         setText('');
         setCustomEmoji('');
+        setAutoEmoji(null);
     };
 
     const renderTextWithLinks = (text) => {
@@ -45,6 +103,9 @@ const TodoModal = ({ date, todos, onClose, onAdd, onDelete }) => {
             return part;
         });
     };
+
+    // Current effective emoji to display in UI preview
+    const effectiveEmoji = customEmoji || autoEmoji || PRIORITY_EMOJIS[priority];
 
     return (
         <div className="modal-overlay" onClick={onClose}>
@@ -75,9 +136,9 @@ const TodoModal = ({ date, todos, onClose, onAdd, onDelete }) => {
                 <form onSubmit={handleSubmit} className="todo-form">
                     <input
                         type="text"
-                        placeholder="Add a task (links auto-detected)..."
+                        placeholder="Add a task (try 'Gym', 'Meeting', '생일')..."
                         value={text}
-                        onChange={e => setText(e.target.value)}
+                        onChange={handleTextChange}
                         className="todo-input"
                         autoFocus
                     />
@@ -87,6 +148,12 @@ const TodoModal = ({ date, todos, onClose, onAdd, onDelete }) => {
                             <option value="Medium">Medium ⚡</option>
                             <option value="Low">Low 📝</option>
                         </select>
+
+                        {/* Emoji Preview / Manual Override */}
+                        <div className="emoji-preview" title="Current Emoji">
+                            {effectiveEmoji}
+                        </div>
+
                         <button type="submit" className="add-btn">Add</button>
                     </div>
                 </form>
