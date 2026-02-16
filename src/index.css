@@ -294,7 +294,54 @@ body {
   padding: 0 1rem;
   background: var(--highlight-color);
   border-radius: 0.75rem;
-  cursor: default;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 3.5rem;
+}
+
+.emoji-preview:hover {
+  background-color: #e2e8f0;
+}
+
+.emoji-picker-container {
+  position: relative;
+}
+
+.emoji-popup {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: 2px solid var(--text-color);
+  border-radius: 1rem;
+  padding: 1rem;
+  width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  margin-bottom: 0.5rem;
+  animation: fadeIn 0.1s ease-out;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+}
+
+.emoji-option {
+  font-size: 1.5rem;
+  cursor: pointer;
+  text-align: center;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.1s;
+}
+
+.emoji-option:hover {
+  background-color: var(--highlight-color);
 }
 
 @keyframes fadeIn {
